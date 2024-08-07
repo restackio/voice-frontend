@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
-const Stream = () => {
+const Stream = ({ sessionId }: { sessionId: string }) => {
   const [isConnected, setIsConnected] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceBufferRef = useRef<SourceBuffer | null>(null);
@@ -17,7 +17,11 @@ const Stream = () => {
     webSocketRef.current.onmessage = (event) => {
       console.log("event", event);
       const data = JSON.parse(event.data);
-      if (data.event === "media" && data.media.payload) {
+      if (
+        data.event === "media" &&
+        data.media.payload &&
+        data.streamSid === sessionId
+      ) {
         const audioBuffer = Uint8Array.from(atob(data.media.payload), (c) =>
           c.charCodeAt(0)
         );

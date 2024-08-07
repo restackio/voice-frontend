@@ -3,9 +3,8 @@
 import React, { useState, useRef, useCallback } from "react";
 // import { v4 as uuidv4 } from "uuid";
 
-const Microphone = () => {
+const Microphone = ({ sessionId }: { sessionId: string }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const [streamId, setStreamId] = useState<string | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const webSocketRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -14,11 +13,11 @@ const Microphone = () => {
 
   const sendAudioData = useCallback(
     ({
-      streamId,
+      streamSid,
       audioBlob,
       mimeType,
     }: {
-      streamId: string;
+      streamSid: string;
       audioBlob: Blob;
       mimeType: string;
     }) => {
@@ -28,9 +27,10 @@ const Microphone = () => {
           const arrayBuffer = reader.result as ArrayBuffer;
           const base64String = Buffer.from(arrayBuffer).toString("base64");
           const event = {
-            streamId,
+            streamSid,
             event: "media",
             media: {
+              track: "inbound",
               payload: base64String,
               mimeType,
             },
@@ -76,18 +76,13 @@ const Microphone = () => {
 
       webSocketRef.current = new WebSocket("ws://localhost:4000/connection");
 
-      // const newStreamId = uuidv4();
-      const newStreamId = "new-1";
-
-      setStreamId(newStreamId);
-
       mediaRecorderRef.current = new MediaRecorder(stream);
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0 && newStreamId) {
+        if (event.data.size > 0 && sessionId) {
           console.log("Captured audioBlob:", event.data);
           sendAudioData({
-            streamId: newStreamId,
+            streamSid: sessionId,
             audioBlob: event.data,
             mimeType: mediaRecorderRef.current?.mimeType || "",
           });
@@ -135,17 +130,15 @@ const Microphone = () => {
       webSocketRef.current.close();
     }
     setIsConnected(false);
-    setStreamId(null);
   }, []);
 
   return (
     <div>
       <p>
         <button onClick={isConnected ? stopConnection : startConnection}>
-          {isConnected ? "Stop Connection" : "Start Connection"}
+          {isConnected ? "Stop microphone" : "Start microphone"}
         </button>
       </p>
-      <p>{streamId}</p>
     </div>
   );
 };
