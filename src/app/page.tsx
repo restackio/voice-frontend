@@ -1,9 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useMicVAD } from "@ricky0123/vad-react";
 
 export default function Home() {
   const router = useRouter();
+  useMicVAD({
+    startOnLoad: false,
+  });
 
   const createSession = async () => {
     try {
@@ -19,10 +23,7 @@ export default function Home() {
       }
 
       const data = await response.json();
-      const { streamSid, websocketAddress } = data;
-
-      // Assuming you want to use websocketAddress somewhere, otherwise you can remove it
-      console.log("WebSocket Address:", websocketAddress);
+      const { streamSid } = data;
 
       router.push(`/${streamSid}`);
     } catch (error) {
