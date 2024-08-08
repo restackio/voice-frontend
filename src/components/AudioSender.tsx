@@ -1,9 +1,11 @@
 import { useMicVAD, utils } from "@ricky0123/vad-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { WaveFile } from "wavefile";
 import { useWebSocket } from "@/app/[sessionId]/WebSocketContext";
+import { useRouter } from "next/navigation";
 
 export const AudioSender = ({ sessionId }: { sessionId: string }) => {
+  const router = useRouter();
   const { socket, isConnected } = useWebSocket();
 
   const vad = useMicVAD({
@@ -44,6 +46,20 @@ export const AudioSender = ({ sessionId }: { sessionId: string }) => {
     },
   });
 
+  const handleCloseSession = () => {
+    if (isConnected && socket) {
+      const event = {
+        streamSid: sessionId,
+        event: "stop",
+      };
+      console.log("send", event);
+      socket.send(JSON.stringify(event));
+      router.push("/");
+    } else {
+      console.log("not connected");
+    }
+  };
+
   useEffect(() => {
     vad.start();
 
@@ -64,6 +80,12 @@ export const AudioSender = ({ sessionId }: { sessionId: string }) => {
         {vad.errored && "error"}
         {vad.userSpeaking && "Sending..."}
       </p>
+      <button
+        onClick={handleCloseSession}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Close Session
+      </button>
     </div>
   );
 };

@@ -18,7 +18,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
     if (isConnected && socket) {
       socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-        console.log("data", data);
+        console.log("event data", data);
 
         if (data.streamSid !== sessionId) {
           return;
@@ -45,8 +45,6 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
 
   const playAudio = async (audioData: Uint8Array) => {
     try {
-      console.log("audioData:", audioData);
-      console.log("Received audio data length:", audioData.byteLength);
       if (audioData.byteLength === 0) {
         throw new Error("Received empty audio data");
       }
@@ -62,8 +60,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
 
       let finalBuffer = audioBuffer;
 
-      const targetSampleRate = 8000;
-      console.log("audioBuffer.sampleRate", audioBuffer.sampleRate);
+      const targetSampleRate = 16000;
       if (audioBuffer.sampleRate !== targetSampleRate) {
         const offlineContext = new OfflineAudioContext(
           audioBuffer.numberOfChannels,
@@ -93,11 +90,34 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
   };
 
   return (
-    <div>
-      <p>Receiving audio for session: {sessionId}</p>
-      <div>
-        <h3>Received Events:</h3>
-        <pre>{JSON.stringify(events, null, 2)}</pre>
+    <div className="space-y-10">
+      <h3>Received Events for session {sessionId}</h3>
+      <div className="h-80 overflow-y-auto p-4">
+        <ul className="space-y-4">
+          {events
+            .filter((event) => ["answer", "question"].includes(event.event))
+            .map((event, index) => (
+              <li key={index} className="flex">
+                {event.event === "answer" && (
+                  <div className="flex gap-2 text-left max-w-xs">
+                    <p className="bg-neutral-700 text-white p-4 rounded-xl">
+                      {event.data?.gptReply?.partialResponse.replace(
+                        "•",
+                        "..."
+                      )}
+                    </p>
+                  </div>
+                )}
+                {event.event === "question" && (
+                  <div className="flex gap-2 text-right max-w-xs ml-auto">
+                    <p className="bg-blue-500 text-white p-4 rounded-xl">
+                      {event.data?.text}
+                    </p>
+                  </div>
+                )}
+              </li>
+            ))}
+        </ul>
       </div>
     </div>
   );

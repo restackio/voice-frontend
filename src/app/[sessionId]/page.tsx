@@ -10,7 +10,7 @@ export default function Session() {
   return (
     <WebSocketProvider sessionId={sessionId}>
       <div className="flex flex-col items-center justify-center h-screen space-y-10">
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <AudioReceiver sessionId={sessionId} />
         </div>
         <div>
