@@ -101,10 +101,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
                 {event.event === "answer" && (
                   <div className="flex gap-2 text-left max-w-xs">
                     <p className="bg-neutral-700 text-white p-4 rounded-xl">
-                      {event.data?.gptReply?.partialResponse.replace(
-                        "•",
-                        "..."
-                      )}
+                      {event.data?.text.replace("•", "...")}
                     </p>
                   </div>
                 )}
