@@ -51,11 +51,11 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({
           wav.fromMuLaw();
           const arrayBuffer = wav.toBuffer();
           await playAudio(arrayBuffer);
-        } else {
           setLoading({
             isLoading: false,
             track: "agent",
           });
+        } else {
           addEvents(data);
         }
       };
