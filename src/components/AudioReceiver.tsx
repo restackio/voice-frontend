@@ -1,16 +1,32 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { WaveFile } from "wavefile";
 import { useWebSocket } from "@/app/[sessionId]/WebSocketContext";
 
 interface AudioReceiverProps {
   sessionId: string;
+  addEvents: (newEvent: any) => void;
+  setLoading: Dispatch<
+    SetStateAction<{
+      isLoading: boolean;
+      track: string;
+    }>
+  >;
 }
 
-const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
+const AudioReceiver: React.FC<AudioReceiverProps> = ({
+  sessionId,
+  addEvents,
+  setLoading,
+}) => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const { socket, isConnected } = useWebSocket();
-  const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
     audioContextRef.current = new AudioContext();
@@ -36,8 +52,11 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
           const arrayBuffer = wav.toBuffer();
           await playAudio(arrayBuffer);
         } else {
-          // Push new event to the state
-          setEvents((prevEvents) => [...prevEvents, data]);
+          setLoading({
+            isLoading: false,
+            track: "agent",
+          });
+          addEvents(data);
         }
       };
     }
@@ -89,35 +108,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({ sessionId }) => {
     }
   };
 
-  return (
-    <div className="space-y-10">
-      <h3>Received Events for session {sessionId}</h3>
-      <div className="h-80 overflow-y-auto p-4">
-        <ul className="space-y-4">
-          {events
-            .filter((event) => ["answer", "question"].includes(event.event))
-            .map((event, index) => (
-              <li key={index} className="flex">
-                {event.event === "answer" && (
-                  <div className="flex gap-2 text-left max-w-xs">
-                    <p className="bg-neutral-700 text-white p-4 rounded-xl">
-                      {event.data?.text.replace("•", "...")}
-                    </p>
-                  </div>
-                )}
-                {event.event === "question" && (
-                  <div className="flex gap-2 text-right max-w-xs ml-auto">
-                    <p className="bg-blue-500 text-white p-4 rounded-xl">
-                      {event.data?.text}
-                    </p>
-                  </div>
-                )}
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
-  );
+  return null;
 };
 
 export default AudioReceiver;
