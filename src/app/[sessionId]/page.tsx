@@ -27,6 +27,7 @@ export default function Session() {
           <AudioReceiver
             sessionId={sessionId}
             addEvents={addEvents}
+            loading={loading}
             setLoading={setLoading}
           />
           <AudioSender sessionId={sessionId} setLoading={setLoading} />

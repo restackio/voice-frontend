@@ -17,19 +17,28 @@ interface AudioReceiverProps {
       track: string;
     }>
   >;
+  loading: {
+    isLoading: boolean;
+    track: string;
+  };
 }
 
 const AudioReceiver: React.FC<AudioReceiverProps> = ({
   sessionId,
   addEvents,
   setLoading,
+  loading,
 }) => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
   const { socket, isConnected } = useWebSocket();
+  const [volume, setVolume] = useState(1);
 
   useEffect(() => {
     audioContextRef.current = new AudioContext();
+    gainNodeRef.current = audioContextRef.current.createGain();
+    gainNodeRef.current.gain.value = volume;
 
     if (isConnected && socket) {
       socket.onmessage = async (event) => {
@@ -61,6 +70,14 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({
       };
     }
   }, [isConnected, socket, sessionId]);
+
+  useEffect(() => {
+    if (loading.track === "user" && loading.isLoading) {
+      adjustVolume(0.2); // Lower volume to 20%
+    } else {
+      adjustVolume(1); // Restore volume to 100%
+    }
+  }, [loading]);
 
   const playAudio = async (audioData: Uint8Array) => {
     try {
@@ -101,10 +118,19 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({
 
       sourceNodeRef.current = audioContextRef.current!.createBufferSource();
       sourceNodeRef.current.buffer = finalBuffer;
-      sourceNodeRef.current.connect(audioContextRef.current!.destination);
+      sourceNodeRef.current
+        .connect(gainNodeRef.current!)
+        .connect(audioContextRef.current!.destination);
       sourceNodeRef.current.start();
     } catch (error) {
       console.error("Error decoding audio data:", error);
+    }
+  };
+
+  const adjustVolume = (newVolume: number) => {
+    setVolume(newVolume);
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = newVolume;
     }
   };
 
