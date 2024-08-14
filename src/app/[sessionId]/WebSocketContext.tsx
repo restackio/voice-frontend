@@ -11,6 +11,7 @@ import React, {
 interface WebSocketContextProps {
   socket: WebSocket | null;
   isConnected: boolean;
+  username: string;
 }
 
 const WebSocketContext = createContext<WebSocketContextProps | undefined>(
@@ -19,14 +20,17 @@ const WebSocketContext = createContext<WebSocketContextProps | undefined>(
 
 export const WebSocketProvider: React.FC<{
   sessionId: string;
+  username: string;
   children: React.ReactNode;
-}> = ({ sessionId, children }) => {
+}> = ({ sessionId, username, children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const connectWebSocket = () => {
-      socketRef.current = new WebSocket(`ws://localhost:4000/connection`);
+      socketRef.current = new WebSocket(
+        `ws://localhost:4000/connection/${sessionId}`
+      );
       socketRef.current.binaryType = "arraybuffer";
 
       socketRef.current.onopen = () => {
@@ -63,7 +67,7 @@ export const WebSocketProvider: React.FC<{
 
   return (
     <WebSocketContext.Provider
-      value={{ socket: socketRef.current, isConnected }}
+      value={{ socket: socketRef.current, isConnected, username }}
     >
       {children}
     </WebSocketContext.Provider>

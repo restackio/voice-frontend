@@ -1,5 +1,5 @@
 import { useMicVAD, utils } from "@ricky0123/vad-react";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { WaveFile } from "wavefile";
 import { useWebSocket } from "@/app/[sessionId]/WebSocketContext";
 import { useRouter } from "next/navigation";
@@ -17,20 +17,28 @@ export const AudioSender = ({
   >;
 }) => {
   const router = useRouter();
-  const { socket, isConnected } = useWebSocket();
+  const { socket, isConnected, username } = useWebSocket();
+  const [isTalking, setIsTalking] = useState(false); // State to track push-to-talk
 
   const vad = useMicVAD({
-    startOnLoad: true,
+    startOnLoad: true, // Do not start on load
     modelURL: "http://localhost:3000/_next/static/chunks/silero_vad.onnx",
     workletURL:
       "http://localhost:3000/_next/static/chunks/vad.worklet.bundle.min.js",
     onSpeechStart: () => {
+      if (!isTalking) {
+        return;
+      }
       setLoading({
         isLoading: true,
         track: "user",
       });
     },
     onSpeechEnd: (audio) => {
+      if (!isTalking) {
+        return;
+      }
+      console.log("onSpeechEnd");
       setLoading({
         isLoading: true,
         track: "agent",
@@ -54,12 +62,14 @@ export const AudioSender = ({
           streamSid: sessionId,
           event: "media",
           media: {
+            username,
             track: "inbound",
             payload: base64,
           },
         };
         console.log("send", event);
         socket.send(JSON.stringify(event));
+        setIsTalking(false);
       } else {
         console.log("not connected");
       }
@@ -71,6 +81,7 @@ export const AudioSender = ({
       const event = {
         streamSid: sessionId,
         event: "stop",
+        username,
       };
       console.log("send", event);
       socket.send(JSON.stringify(event));
@@ -80,16 +91,29 @@ export const AudioSender = ({
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Space" && !isTalking) {
+      setIsTalking(true);
+    }
+  };
+
   useEffect(() => {
-    vad.start();
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      vad.pause();
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isTalking]);
 
   return (
     <div className="w-full space-y-4 mt-10">
+      <div
+        className={`bg-blue-500 text-white px-4 py-2 rounded w-full text-center ${
+          isTalking ? "bg-green-500" : "bg-blue-500"
+        }`}
+      >
+        {isTalking ? "Talking..." : "Hit Space Once to Talk"}
+      </div>
       <button
         onClick={handleCloseSession}
         className="bg-red-500 text-white px-4 py-2 rounded w-full"

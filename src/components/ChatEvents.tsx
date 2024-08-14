@@ -2,6 +2,7 @@ import React from "react";
 
 interface ChatEventsProps {
   sessionId: string;
+  username: string;
   loading: {
     isLoading: boolean;
     track: string;
@@ -11,6 +12,7 @@ interface ChatEventsProps {
 
 const ChatEvents: React.FC<ChatEventsProps> = ({
   sessionId,
+  username,
   loading,
   events,
 }) => {
@@ -21,28 +23,27 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
       <div className="h-full overflow-y-auto p-4">
         <ul className="space-y-4">
           {events
-            .filter((event) => ["answer", "question"].includes(event.event))
+            .filter((event) => ["message"].includes(event.event))
             .map((event, index) => (
               <li
                 key={index}
                 className={`flex ${
-                  event.event === "answer" ? "justify-start" : "justify-end"
+                  event.data.username === username
+                    ? "justify-start"
+                    : "justify-end"
                 }`}
               >
-                {event.event === "answer" && (
-                  <div className="flex gap-2 text-left max-w-xs">
-                    <p className="bg-neutral-700 text-white p-4 rounded-xl">
-                      {event.data?.text.replaceAll("•", "")}
-                    </p>
-                  </div>
-                )}
-                {event.event === "question" && (
-                  <div className="flex gap-2 text-right max-w-xs ml-auto">
-                    <p className="bg-blue-500 text-white p-4 rounded-xl">
-                      {event.data?.text}
-                    </p>
-                  </div>
-                )}
+                <div className="flex gap-2 text-left max-w-xs">
+                  <p
+                    className={`${
+                      event.data.username === username
+                        ? "bg-blue-500"
+                        : "bg-neutral-700 "
+                    } text-white p-4 rounded-xl`}
+                  >
+                    {event.data?.text.replaceAll("•", "")}
+                  </p>
+                </div>
               </li>
             ))}
           {loading.isLoading && (

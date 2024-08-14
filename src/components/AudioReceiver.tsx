@@ -32,7 +32,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
-  const { socket, isConnected } = useWebSocket();
+  const { socket, isConnected, username } = useWebSocket();
   const [volume, setVolume] = useState(1);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const AudioReceiver: React.FC<AudioReceiverProps> = ({
           return;
         }
 
-        if (data.event === "media") {
+        if (data.event === "media" && data.media.track !== "inbound") {
           const wav = new WaveFile();
           wav.fromScratch(
             1,
