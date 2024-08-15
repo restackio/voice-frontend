@@ -21,8 +21,8 @@ export default function Session() {
 
   return (
     <WebSocketProvider sessionId={sessionId}>
-      <div className="flex flex-col items-center justify-center h-screen space-y-10">
-        <div className="max-w-4xl mx-auto">
+      <div className="flex flex-col items-center justify-center h-screen space-y-10 p-10 relative">
+        <div className="w-full mx-auto">
           <ChatEvents sessionId={sessionId} events={events} loading={loading} />
           <AudioReceiver
             sessionId={sessionId}
@@ -30,6 +30,8 @@ export default function Session() {
             loading={loading}
             setLoading={setLoading}
           />
+        </div>
+        <div className="fixed bottom-0 w-full bg-neutral-900 p-4 shadow-md">
           <AudioSender sessionId={sessionId} setLoading={setLoading} />
         </div>
       </div>

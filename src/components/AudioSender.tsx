@@ -89,12 +89,12 @@ export const AudioSender = ({
   }, []);
 
   return (
-    <div className="w-full space-y-4 mt-10">
+    <div className="w-full space-y-4">
       <button
         onClick={handleCloseSession}
-        className="bg-red-500 text-white px-4 py-2 rounded w-full"
+        className="bg-neutral-500 hover:bg-red-500 text-white px-4 py-2 rounded w-full"
       >
-        Close Session
+        Quit Party
       </button>
     </div>
   );

@@ -17,11 +17,12 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
   console.log("events", events);
   return (
     <div className="space-y-10">
-      <h3>Received Events for session {sessionId}</h3>
       <div className="h-full overflow-y-auto p-4">
         <ul className="space-y-4">
           {events
-            .filter((event) => ["answer", "question"].includes(event.event))
+            .filter((event) =>
+              ["answer", "question", "image"].includes(event.event)
+            )
             .map((event, index) => (
               <li
                 key={index}
@@ -41,6 +42,15 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
                     <p className="bg-blue-500 text-white p-4 rounded-xl">
                       {event.data?.text}
                     </p>
+                  </div>
+                )}
+                {event.event === "image" && (
+                  <div className="flex gap-2 text-right w-full rounded-xl">
+                    <img
+                      src={event.data?.image.url}
+                      alt="image"
+                      className="rounded-xl"
+                    />
                   </div>
                 )}
               </li>

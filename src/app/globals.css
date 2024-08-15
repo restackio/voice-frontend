@@ -32,3 +32,14 @@ body {
     text-wrap: balance;
   }
 }
+
+.fullscreen-background {
+  background-image: url('/dungeons_and_dragons_wallpaper_by_xabian_d1r382v.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
