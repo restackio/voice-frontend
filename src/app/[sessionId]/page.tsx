@@ -31,7 +31,7 @@ export default function Session() {
             setLoading={setLoading}
           />
         </div>
-        <div className="fixed bottom-0 w-full bg-neutral-900 p-4 shadow-md">
+        <div className="fixed top-0 right-0 p-4 shadow-md">
           <AudioSender sessionId={sessionId} setLoading={setLoading} />
         </div>
       </div>
