@@ -2,14 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { useMicVAD } from "@ricky0123/vad-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   useMicVAD({
     startOnLoad: false,
   });
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 62;
+      audioRef.current.play();
+    }
+  }, []);
 
   const createSession = async () => {
     setLoading(true);
@@ -36,6 +45,7 @@ export default function Home() {
 
   return (
     <div className="fullscreen-background overflow-hidden">
+      <audio ref={audioRef} src="/255_The_Hearth_Inn.mp3" loop />
       <div className="flex flex-col items-center justify-center h-screen mt-60">
         <button
           onClick={createSession}
