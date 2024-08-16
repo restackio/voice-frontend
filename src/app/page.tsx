@@ -14,10 +14,36 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 62;
-      audioRef.current.play();
-    }
+    const handleUserInteraction = () => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 62;
+        audioRef.current.muted = false;
+        audioRef.current
+          .play()
+          .then(() => {
+            console.log("Audio started playing");
+          })
+          .catch((error) => {
+            console.log("Autoplay failed:", error);
+          });
+      }
+      // Remove the event listener after the first interaction
+      window.removeEventListener("mousemove", handleUserInteraction);
+      window.removeEventListener("click", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+    };
+
+    // Add event listeners for user interaction
+    window.addEventListener("mousemove", handleUserInteraction);
+    window.addEventListener("click", handleUserInteraction);
+    window.addEventListener("keydown", handleUserInteraction);
+
+    return () => {
+      // Clean up event listeners on component unmount
+      window.removeEventListener("mousemove", handleUserInteraction);
+      window.removeEventListener("click", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+    };
   }, []);
 
   const createSession = async () => {
@@ -45,7 +71,7 @@ export default function Home() {
 
   return (
     <div className="fullscreen-background overflow-hidden">
-      <audio ref={audioRef} src="/255_The_Hearth_Inn.mp3" loop />
+      <audio ref={audioRef} src="/255_The_Hearth_Inn.mp3" loop muted />
       <div className="flex flex-col items-center justify-center h-screen mt-60">
         <button
           onClick={createSession}
