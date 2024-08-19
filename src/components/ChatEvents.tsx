@@ -1,3 +1,4 @@
+import { getColorFromUsername, getEmojiFromUsername } from "@/app/utils/random";
 import React from "react";
 
 interface ChatEventsProps {
@@ -19,30 +20,29 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
   console.log("events", events);
   return (
     <div className="space-y-10">
-      <h3>Received Events for session {sessionId}</h3>
       <div className="h-full overflow-y-auto p-4">
-        <ul className="space-y-4">
+        <ul className="space-y-4 divide-y divide-neutral-800">
           {events
-            .filter((event) => ["message"].includes(event.event))
+            .filter((event) => ["assistant", "user"].includes(event.event))
             .map((event, index) => (
-              <li
-                key={index}
-                className={`flex ${
-                  event.data.username === username
-                    ? "justify-start"
-                    : "justify-end"
-                }`}
-              >
-                <div className="flex gap-2 text-left max-w-xs">
-                  <p
-                    className={`${
-                      event.data.username === username
-                        ? "bg-blue-500"
-                        : "bg-neutral-700 "
-                    } text-white p-4 rounded-xl`}
+              <li key={index}>
+                <div className="p-2 grid grid-cols-6 sm:grid-cols-12 gap-4 text-left w-full items-center">
+                  <div
+                    className="mt-4 w-10 h-10 flex items-center justify-center rounded-full text-xl"
+                    style={{
+                      backgroundColor: getColorFromUsername(event.data.trackId),
+                    }}
                   >
-                    {event.data?.text.replaceAll("•", "")}
-                  </p>
+                    {getEmojiFromUsername(event.data.trackId)}
+                  </div>
+                  <div className="col-span-4 sm:col-span-11">
+                    <p className="text-neutral-700 text-xs">
+                      {event.data.trackId}
+                    </p>
+                    <span className="text-md font-sans font-light">
+                      {event.data?.text.replaceAll("•", "")}
+                    </span>
+                  </div>
                 </div>
               </li>
             ))}

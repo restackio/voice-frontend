@@ -2,20 +2,30 @@
 
 import { useRouter } from "next/navigation";
 import { useMicVAD } from "@ricky0123/vad-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getColorFromUsername,
+  getEmojiFromUsername,
+  randomUser,
+} from "./utils/random";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
 
+  const randomUsername = randomUser();
+  useEffect(() => {
+    setUsername(randomUsername);
+  }, []);
+
   useMicVAD({
     startOnLoad: false,
   });
 
-  const createSession = async () => {
+  const createRoom = async () => {
     if (!username) {
-      alert("Please enter a username");
+      alert("Please select emoji");
       return;
     }
 
@@ -41,21 +51,26 @@ export default function Home() {
     }
   };
 
+  const handleEmojiClick = () => {
+    const randomUsername = randomUser();
+    setUsername(randomUsername);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <input
-        type="text"
-        placeholder="Enter your username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="mt-4 px-4 py-2 border rounded"
-      />
+      <div
+        onClick={handleEmojiClick}
+        className="mt-4 w-32 h-32 flex items-center justify-center rounded-full cursor-pointer text-7xl"
+        style={{ backgroundColor: getColorFromUsername(username) }}
+      >
+        {getEmojiFromUsername(username)}
+      </div>
       <button
-        onClick={createSession}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
+        onClick={createRoom}
+        className="mt-4 px-4 py-2 bg-gray-100 text-gray-900 rounded hover:bg-blue-400"
         disabled={loading}
       >
-        {loading ? "Loading..." : "Create Session"}
+        {loading ? "Loading..." : "Create room"}
       </button>
     </div>
   );

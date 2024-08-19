@@ -62,7 +62,7 @@ export const AudioSender = ({
           streamSid: sessionId,
           event: "media",
           media: {
-            username,
+            trackId: username,
             track: "inbound",
             payload: base64,
           },
@@ -106,17 +106,18 @@ export const AudioSender = ({
   }, [isTalking]);
 
   return (
-    <div className="w-full space-y-4 mt-10">
+    <div className="w-full space-y-4 mt-4">
       <div
-        className={`bg-blue-500 text-white px-4 py-2 rounded w-full text-center ${
-          isTalking ? "bg-green-500" : "bg-blue-500"
+        className={`px-4 py-3 rounded-full w-full text-center cursor-pointer ${
+          isTalking ? "bg-green-500 text-white" : "bg-neutral-800 text-gray-100"
         }`}
+        onClick={() => setIsTalking(!isTalking)}
       >
         {isTalking ? "Talking..." : "Hit Space Once to Talk"}
       </div>
       <button
         onClick={handleCloseSession}
-        className="bg-red-500 text-white px-4 py-2 rounded w-full"
+        className="bg-red-900/50 hover:bg-red-800 text-white px-4 py-3 rounded-md w-full"
       >
         Close Session
       </button>

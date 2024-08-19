@@ -6,6 +6,8 @@ import { WebSocketProvider } from "./WebSocketContext";
 import { AudioSender } from "@/components/AudioSender";
 import AudioReceiver from "@/components/AudioReceiver";
 import ChatEvents from "@/components/ChatEvents";
+import { getColorFromUsername, getEmojiFromUsername } from "../utils/random";
+import MessageInput from "@/components/MessageInput";
 
 export default function Session() {
   const router = useRouter();
@@ -52,23 +54,49 @@ export default function Session() {
     );
   }
 
+  const uniqueTrackIds = Array.from(
+    new Set(events.map((event) => event.data.trackId))
+  );
+
   return (
     <WebSocketProvider sessionId={sessionId} username={username}>
-      <div className="flex flex-col items-center justify-center h-screen space-y-10">
-        <div className="max-w-4xl mx-auto">
-          <ChatEvents
-            sessionId={sessionId}
-            events={events}
-            loading={loading}
-            username={username}
-          />
-          <AudioReceiver
-            sessionId={sessionId}
-            addEvents={addEvents}
-            loading={loading}
-            setLoading={setLoading}
-          />
-          <AudioSender sessionId={sessionId} setLoading={setLoading} />
+      <div className="sm:flex h-screen">
+        <div className="sm:w-1/3 p-4 border-r border-neutral-800 flex flex-col">
+          <div className="grid grid-cols-4 auto-cols-max auto-rows-max flex-grow">
+            {uniqueTrackIds.map((trackId, index) => (
+              <div key={index} className="col-span-1 space-y-4">
+                <div
+                  className="mt-4 w-24 h-24 flex items-center justify-center rounded-full text-5xl"
+                  style={{
+                    backgroundColor: getColorFromUsername(trackId),
+                  }}
+                >
+                  {getEmojiFromUsername(trackId)}
+                </div>
+                <p className="text-neutral-500 text-xs">{trackId}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-auto">
+            <MessageInput sessionId={sessionId} />
+            <AudioSender sessionId={sessionId} setLoading={setLoading} />
+          </div>
+        </div>
+        <div className="sm:w-2/3 p-4">
+          <div className="max-w-4xl mx-auto">
+            <ChatEvents
+              sessionId={sessionId}
+              events={events}
+              loading={loading}
+              username={username}
+            />
+            <AudioReceiver
+              sessionId={sessionId}
+              addEvents={addEvents}
+              loading={loading}
+              setLoading={setLoading}
+            />
+          </div>
         </div>
       </div>
     </WebSocketProvider>
