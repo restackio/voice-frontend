@@ -72,7 +72,6 @@ export const randomUser = () => {
   const emojiCode = emojis[Math.floor(Math.random() * emojis.length)];
   const color = getRandomColor();
   const username = `${emojiCode}-${color}`;
-
   return username;
 };
 
