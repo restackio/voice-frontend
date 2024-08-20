@@ -1,20 +1,25 @@
 "use client";
 
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WebSocketProvider } from "./WebSocketContext";
 import { AudioSender } from "@/components/AudioSender";
 import AudioReceiver from "@/components/AudioReceiver";
 import ChatEvents from "@/components/ChatEvents";
-import { getColorFromUsername, getEmojiFromUsername } from "../utils/random";
+import {
+  getColorFromUsername,
+  getEmojiFromUsername,
+  randomUser,
+} from "../utils/random";
 import MessageInput from "@/components/MessageInput";
+import EmojiPicker from "@/components/EmojiPicker";
 
 export default function Session() {
   const router = useRouter();
   const sessionId = useParams().sessionId.toString();
   const searchParams = useSearchParams();
-  const initialUsername = searchParams.get("username");
-  const [username, setUsername] = useState(initialUsername || "");
+  const username = searchParams.get("username");
+  const [emojiName, setEmojiname] = useState("");
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState({
     isLoading: true,
@@ -27,27 +32,33 @@ export default function Session() {
 
   const handleUsernameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username) {
-      router.replace(`/${sessionId}?username=${username}`);
+    if (emojiName.length > 0) {
+      router.push(`/${sessionId}?username=${emojiName}`);
     }
   };
 
+  useEffect(() => {
+    if (!username) {
+      const randomUsername = randomUser();
+      setEmojiname(randomUsername);
+    }
+  }, [username]);
+
   if (!username) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <form onSubmit={handleUsernameSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="px-4 py-2 border rounded"
-          />
+      <div className="flex flex-col items-center justify-center h-screen bg-pink-200">
+        <form
+          onSubmit={handleUsernameSubmit}
+          className="space-y-4 flex flex-col items-center justify-center"
+        >
+          <div>
+            <EmojiPicker username={emojiName} setEmojiname={setEmojiname} />
+          </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
+            className="px-4 py-2 bg-pink-500 text-neutral-100 rounded hover:bg-pink-600"
           >
-            Join Session
+            Join room {sessionId.split("-")[0]}
           </button>
         </form>
       </div>

@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useMicVAD } from "@ricky0123/vad-react";
 import { useState, useEffect } from "react";
-import {
-  getColorFromUsername,
-  getEmojiFromUsername,
-  randomUser,
-} from "./utils/random";
-
+import { randomUser } from "./utils/random";
+import Header from "@/components/Header";
+import EmojiPicker from "@/components/EmojiPicker";
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -51,27 +48,26 @@ export default function Home() {
     }
   };
 
-  const handleEmojiClick = () => {
-    const randomUsername = randomUser();
-    setUsername(randomUsername);
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div
-        onClick={handleEmojiClick}
-        className="mt-4 w-32 h-32 flex items-center justify-center rounded-full cursor-pointer text-7xl"
-        style={{ backgroundColor: getColorFromUsername(username) }}
-      >
-        {getEmojiFromUsername(username)}
+    <div className="h-screen bg-pink-200">
+      <Header className="sticky top-0" />
+      <div className="flex flex-col items-center justify-center py-96 space-y-20">
+        <div className="text-center">
+          <p className="text-7xl sm:text-8xl font-black text-pink-950">
+            strawberry space
+          </p>
+        </div>
+        <section id="room-creator">
+          <EmojiPicker username={username} setEmojiname={setUsername} />
+          <button
+            onClick={createRoom}
+            className="mt-4 px-4 py-2 bg-pink-500 text-gray-100 rounded hover:bg-pink-600"
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Create room"}
+          </button>
+        </section>
       </div>
-      <button
-        onClick={createRoom}
-        className="mt-4 px-4 py-2 bg-gray-100 text-gray-900 rounded hover:bg-blue-400"
-        disabled={loading}
-      >
-        {loading ? "Loading..." : "Create room"}
-      </button>
     </div>
   );
 }

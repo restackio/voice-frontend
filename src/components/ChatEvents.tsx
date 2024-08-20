@@ -23,7 +23,9 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
       <div className="h-full overflow-y-auto p-4">
         <ul className="space-y-4 divide-y divide-neutral-800">
           {events
-            .filter((event) => ["assistant", "user"].includes(event.event))
+            .filter((event) =>
+              ["roomMessage", "userMessage"].includes(event.event)
+            )
             .map((event, index) => (
               <li key={index}>
                 <div className="p-2 grid grid-cols-6 sm:grid-cols-12 gap-4 text-left w-full items-center">
@@ -36,10 +38,10 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
                     {getEmojiFromUsername(event.data.trackId)}
                   </div>
                   <div className="col-span-4 sm:col-span-11">
-                    <p className="text-neutral-700 text-xs">
+                    <p className="text-neutral-600 text-xs">
                       {event.data.trackId}
                     </p>
-                    <span className="text-md font-sans font-light">
+                    <span className="text-neutral-100 text-md font-sans font-light">
                       {event.data?.text.replaceAll("•", "")}
                     </span>
                   </div>
@@ -56,7 +58,7 @@ const ChatEvents: React.FC<ChatEventsProps> = ({
               <div className="max-w-xs">
                 <p
                   className={`${
-                    loading.track === "agent" ? "bg-neutral-700" : "bg-blue-500"
+                    loading.track === "agent" ? "bg-neutral-700" : "bg-pink-500"
                   } text-white px-4 py-2 rounded-xl animate-pulse`}
                 >
                   ...

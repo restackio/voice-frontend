@@ -108,18 +108,18 @@ export const AudioSender = ({
   return (
     <div className="w-full space-y-4 mt-4">
       <div
-        className={`px-4 py-3 rounded-full w-full text-center cursor-pointer ${
+        className={`px-4 py-3 rounded-md w-full text-center cursor-pointer ${
           isTalking ? "bg-green-500 text-white" : "bg-neutral-800 text-gray-100"
         }`}
         onClick={() => setIsTalking(!isTalking)}
       >
-        {isTalking ? "Talking..." : "Hit Space Once to Talk"}
+        {isTalking ? "Talking..." : "Hit Space to Talk"}
       </div>
       <button
         onClick={handleCloseSession}
         className="bg-red-900/50 hover:bg-red-800 text-white px-4 py-3 rounded-md w-full"
       >
-        Close Session
+        Close room
       </button>
     </div>
   );

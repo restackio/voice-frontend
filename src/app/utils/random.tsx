@@ -1,4 +1,21 @@
 const emojis = [
+  "127815", // grapes
+  "127816", // melon
+  "127817", // watermelon
+  "127818", // tangerine
+  "127819", // lemon
+  "127820", // banana
+  "127821", // pineapple
+  "127822", // mango
+  "127823", // red apple
+  "127824", // green apple
+  "127825", // pear
+  "127826", // peach
+  "127827", // cherries
+  "127828", // strawberry
+  "127829", // kiwi fruit
+  "127830", // tomato
+  "127831", // coconut
   "128169", // poop
   "128640", // rocket
   "127752", // rainbow
