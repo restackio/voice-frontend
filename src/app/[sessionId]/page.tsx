@@ -73,7 +73,7 @@ export default function Session() {
     <WebSocketProvider sessionId={sessionId} username={username}>
       <div className="sm:flex h-screen">
         <div className="sm:w-1/3 p-4 border-r border-neutral-800 flex flex-col">
-          <div className="grid grid-cols-4 auto-cols-max auto-rows-max flex-grow">
+          <div className="grid grid-cols-4 auto-cols-max auto-rows-max flex-grow p-8">
             {uniqueTrackIds.map((trackId, index) => (
               <div key={index} className="col-span-1 space-y-4">
                 <div
@@ -94,7 +94,7 @@ export default function Session() {
           </div>
         </div>
         <div className="sm:w-2/3 p-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <ChatEvents
               sessionId={sessionId}
               events={events}
